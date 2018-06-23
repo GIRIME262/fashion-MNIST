@@ -116,18 +116,18 @@ def get_model_4():
     model3.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
     return model3
 
-def get_model_5():
+def get_model_5(p=0.2):
     model3=Sequential()
     model3.add(BatchNormalization(input_shape=(28,28,1)))
     model3.add(Conv2D(filters=6, kernel_size=(3, 3), padding="same", name='Conv1',
               input_shape=(28,28,1)))
     model3.add(BatchNormalization())
-    model3.add(Activation('relu'))
+    model3.add(Activation('relu', name='Relu1'))
     model3.add(Conv2D(filters=12, kernel_size=(3, 3), padding="same", name='Conv2'))
     model3.add(BatchNormalization())
     model3.add(Activation('relu'))
     model3.add(MaxPooling2D(pool_size=(2, 2), name='MaxPool1'))
-    model3.add(Dropout(0.5))
+    model3.add(Dropout(p))
     model3.add(Conv2D(filters=24, kernel_size=(3, 3), padding="same", name='Conv3'))
     model3.add(BatchNormalization())
     model3.add(Activation('relu'))
@@ -135,11 +135,11 @@ def get_model_5():
     model3.add(BatchNormalization())
     model3.add(Activation('relu'))
     model3.add(MaxPooling2D(pool_size=(3, 3), name='MaxPool2'))
-    model3.add(Dropout(0.5))
+    model3.add(Dropout(p))
     model3.add(Flatten())
     model3.add(Dense(256))
     model3.add(LeakyReLU())
-    model3.add(Dropout(0.5))
+    model3.add(Dropout(p))
     model3.add(Dense(256))
     model3.add(LeakyReLU())
     model3.add(Dense(10, activation='softmax'))

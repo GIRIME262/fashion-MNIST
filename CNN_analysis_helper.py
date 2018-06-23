@@ -77,7 +77,6 @@ def normalize(x):
     return x / (K.sqrt(K.mean(K.square(x))) + K.epsilon())
 
 def do_gradient_ascent(model, layer_name, filter_index, input_img_data_raw, step = 1, deprocess_image_flag=True, iterations = 20, img_width = 28, img_height = 28):
-    global grad_glob
     # get the symbolic outputs of each "key" layer (we gave them unique names).
     layer_dict = dict([(layer.name, layer) for layer in model.layers])
     # build a loss function that maximizes the activation
@@ -102,7 +101,6 @@ def do_gradient_ascent(model, layer_name, filter_index, input_img_data_raw, step
     input_img_data = input_img_data_raw.copy()
     for i in range(iterations):
         loss_value, grads_value = iterate([input_img_data])
-        grad_glob = grads_value
         #print(grads_value.shape)
         input_img_data += grads_value * step
         #step = step*0.99
@@ -138,3 +136,26 @@ def plot_conv_filters(model, layer_name, input_img_data, iterations=200, step = 
         ax[i].imshow(img, cmap='gray')
     plt.show()
     return images
+
+def plot_activations(activations_output, relative=False, n_filters=6):
+    f, ax = plt.subplots(activations_output.shape[0], n_filters, figsize=(10,6))
+    f.tight_layout()
+    for j in range(activations_output.shape[0]):
+        vmax = activations_output[j,:,:,:].max()
+        vmin = activations_output[j,:,:,:].min()
+        
+        #f.tight_layout() 
+        for i in range(n_filters):
+            ax[j, i].axis('off')
+            if relative:
+                ax[j, i].imshow(activations_output[j,:,:,i], cmap='gray', vmax=vmax, vmin=vmin)
+            else:
+                ax[j, i].imshow(activations_output[j,:,:,i], cmap='gray')
+    plt.show()
+    
+def select_images_from_dataset(imagesIdxs = [0,53,5,50,9]):
+    images_to_filter = x_train[imagesIdxs[0]][:,:,0].T
+    for i in imagesIdxs[1:]:
+        images_to_filter = np.dstack((images_to_filter, x_train[i][:,:,0].T))
+    images_to_filter = images_to_filter.reshape(5, 28,28,1)
+    return images_to_filter
